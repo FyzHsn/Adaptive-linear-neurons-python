@@ -26,7 +26,9 @@ class Adaline(object):
         Weights after fitting. Underscore after a variable name indicates 
         that the variable was not created on instantiation of the object.
     cost_ : list
-        Cost function for each sample batch and weight vector.
+        Cost function of sample batch and weight vector per epoch.
+    errors_ : list
+        List of errors after weight update per epoch
         
     """
     def __init__(self, eta=0.01, n_iter=10):
@@ -50,16 +52,14 @@ class Adaline(object):
         
         """
         self.w_ = np.zeros(1 + X.shape[1])
+        self.cost_ = []
         self.errors_ = []
         
-        for _ in range(self.n_iter):
-            errors = 0
-            for xi, target in zip(X, y):
-                update = self.eta * (target - self.predict(xi))
-                self.w_[1:] += update * xi
-                self.w_[1] += update
-                errors += int(update != 0)
-            self.errors_.append(errors)
+        for i in range(self.n_iter):
+            output = self.net_input(X)
+            errors = y - output
+            
+            
         return self
         
     def net_input(self, X):
