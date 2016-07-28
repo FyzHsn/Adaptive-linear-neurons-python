@@ -44,11 +44,16 @@ epoch.
 
 """
 from adaline import Adaline
-adln = Adaline(eta=0.001, n_iter=10)
+adln = Adaline(eta=0.1, n_iter=10)
 adln.fit(X, y)
-plt.plot(range(1, len(adln.errors_) + 1), adln.errors_,
+plt.plot(range(1, len(adln.cost_) + 1), np.log10(adln.cost_),
          marker='o')
-plt.xlabel('Epochs')
-plt.ylabel('Number of misclassifications')
+plt.xlabel('Epoch #')
+plt.ylabel('SSE cost function')
 plt.show()
 
+plt.plot(range(1, len(adln.errors_) + 1), adln.errors_,
+         marker='o')
+plt.xlabel('Epoch #')
+plt.ylabel('Errors')
+plt.show()
