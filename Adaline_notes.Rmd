@@ -1,0 +1,15 @@
+---
+title: "Notes on [Ada]ptive [Li]near [Ne]uron (ADALINE) algorithms"
+author: "Faiyaz Hasan"
+date: "July 30, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Adaline was developed by Bernard Widrow and Ted Hoff at Stanford University during 1960. The algorithm is generally considered an improvement over the Perceptron. Yet, what surprises my is that it is much more intuitive than the latter algorithm. The back-and-forth rotation of the weight vector and its eventual convergence is surprising to me. The conceptual intuitiveness of the algorithm comes from the usage of a convex, differentiable cost function that is to be minimized.
+
+In this document, we will play with two variants, the Gradient Descent and the Stochastic Gradient Descent method.
+
