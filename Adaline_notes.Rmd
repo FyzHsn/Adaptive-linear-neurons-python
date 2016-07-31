@@ -9,7 +9,194 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Adaline was developed by Bernard Widrow and Ted Hoff at Stanford University during 1960. The algorithm is generally considered an improvement over the Perceptron. Yet, what surprises my is that it is much more intuitive than the latter algorithm. The back-and-forth rotation of the weight vector and its eventual convergence is surprising to me. The conceptual intuitiveness of the algorithm comes from the usage of a convex, differentiable cost function that is to be minimized.
+Adaline was developed by Bernard Widrow and Ted Hoff at Stanford University during 1960. The algorithm is generally considered an improvement over the Perceptron. Yet, what surprises my is that it is much more intuitive than the latter algorithm. The back-and-forth rotation of the weight vector and its eventual convergence is surprising to me. The conceptual intuitiveness of the algorithm comes from the usage of a convex, differentiable cost function that is to be minimized. The divergence/convergence of the weight factors for high/low learning rates is obvious.
 
-In this document, we will play with two variants, the Gradient Descent and the Stochastic Gradient Descent method.
+In this document, we will play with two variants, the Gradient Descent and the Stochastic Gradient Descent method. Other stategies include marrying the two previous algorithms in something called the mini-batch algorithms.
+
+Adaline - Gradient Descent
+--------------------------
+
+### Iris Dataset and preprocessing
+
+We're interested in both the regular iris dataset as well as the standardized version with the mean subtracted out and the standard deviation reduced to 1.
+
+```{r, iris preprocessing}
+# load the iris dataset
+data(iris)
+str(iris)
+
+# sepal and petal dimensions
+X <- iris[1:100, 1:4]
+names(X) <- tolower(names(X))
+
+# initialize X_std dataframe
+X_std <- iris[1:100, 1:4]
+
+# define standardized data set
+for (i in 1:4) {
+        X_std[, i] <- (X[, i]-mean(X[, i]))/sd(X[, i])
+}
+
+# first few rows of both data frames
+head(X)
+head(X_std)
+
+# binary classification vector according to species: setosa(-1), versicolor(1)
+y <- rep(1, 100)
+y[which(iris[, 5] == "setosa")] <- -1
+y[which(iris[, 5] == "versicolor")] <- 1
+
+# pre-process non-separable data points (ns stands for non-separable)
+# sepal and petal dimensions
+Xns <- iris[51:150, 1:4]
+names(Xns) <- tolower(names(Xns))
+
+# initialize X_std dataframe
+Xns_std <- iris[51:150, 1:4]
+
+# define standardized data set
+for (i in 1:4) {
+        Xns_std[, i] <- (Xns[, i]-mean(Xns[, i]))/sd(Xns[, i])
+}
+
+# binary classification vector according to species: setosa(-1), versicolor(1)
+yns <- rep(1, 100)
+l1 <- sum(iris[, 5] == "versicolor")
+l2 <- sum(iris[, 5] == "virginica")
+yns[1:l1] <- -1
+yns[(l1+1):(l1+l2)] <- 1
+dim(Xns)
+length(yns)
+```
+
+### Algorithm
+
+Now, let us implement the adaline gradient descent algorithm. We're interested in the update of the weights, cost function and the amount of errors made per epoch. In the adaline, the weights are updated over entire data set in one go.
+
+```{r, adalineGD algorithm}
+adalineGD <- function(X, y, n_iter=10, eta=0.01) {
+        
+        # extend input vector and initialize extended weight
+        X[, dim(X)[2] + 1] <- 1 
+        X <- as.matrix(X)
+        w <- as.matrix(rep(0, dim(X)[2]))
+        
+        # initialize cost values - gets updated according to epochnums -                number of epochs
+        cost <- rep(0, n_iter)
+        error <- rep(0, n_iter)
+        
+        # loop over the number of epochs
+        for (i in 1:n_iter) {
+                
+                # find the number of wrong prediction before weight update
+                for (j in 1:dim(X)[1]) {
+                        
+                        # compute net input
+                        z <- sum(w * X[j, ])
+                        
+                        # quantizer
+                        if(z < 0.0) {
+                                ypred <- -1
+                        } else {
+                                ypred <- 1
+                        }
+                        
+                        # comparison with actual labels and counting error
+                        if(ypred != y[j]) {
+                                error[i] <- error[i] + 1
+                        }
+                }
+                cost[i] <- sum((y - X %*% w)^2)/2
+                
+                # update weight according to gradient descent
+                w <- w + eta*t(X) %*% (y - X %*% w)
+        }
+        
+        # data frame consisting of cost and error info
+        infomatrix <- matrix(rep(0, 3 * n_iter), nrow = n_iter, ncol = 3)
+        infomatrix[, 1] <- 1:n_iter
+        infomatrix[, 2] <- cost
+        infomatrix[, 3] <- error
+        
+        infodf <- as.data.frame(infomatrix)
+        names(infodf) <- c("epoch", "cost", "error")
+        
+        return(infodf)
+}
+```
+
+* It would be cool to see how the cost function and the error is updated
+* Comparison of regular and standard data
+* testing different learning rates
+* Difference with perceptron: convergence depends on learning rate for adaline. Perceptron convergence depends on linear separability, meanhwile for the adaline it can (???) converge without separability. Test it with the versicolor vs virginica dataset.
+
+```{r, standard vs non-standard separable data}
+library(ggplot2)
+library(reshape2)
+
+# Standardized vs non-standard data: Cost and error function
+eta <- 0.0001
+n_iter <- 100
+result1 <- adalineGD(X, y, n_iter, eta)
+label <- rep("non-standard", dim(result1)[1])
+result1 <- cbind(label, result1)
+result2 <- adalineGD(X_std, y, n_iter, eta)
+label <- rep("standard", dim(result2)[1])
+result2 <- cbind(label, result2)
+
+df <- rbind(result1, result2)
+
+# long format of data frame
+dflong <- melt(df, id.vars=c("epoch", "label"))
+head(dflong)
+
+ggplot(dflong, aes(x=epoch, y=value)) + 
+        geom_line(aes(color=label, linetype=label), size = 1) +
+        facet_grid(variable ~ .) + xlab("Epoch #") + ylab("") +
+        ggtitle("Cost and error function for a dataset \n and its standardized form: eta = 0.0001")
+# Convergence of weights depending on learning rate
+
+# Long term behaviour of cost function
+
+# Classifying non-separable data
+```
+
+From this plot, we can see that the cost function approaches the minimum faster as well as the error function reducing to nil quicker in the case of the standardized data.
+
+Now, let us look at what happens when we run the adalineGD for non-separable data. This is the same dataset we also applied the Perceptron on and found that the minimum attainable error was 2.
+
+```{r, standard vs non-standard, non-separable}
+# Standardized vs non-standard data: Cost and error function
+eta <- 0.0001
+n_iter <- 300
+result1 <- adalineGD(Xns, yns, n_iter, eta)
+label <- rep("non-standard", dim(result1)[1])
+result1 <- cbind(label, result1)
+result2 <- adalineGD(Xns_std, yns, n_iter, eta)
+label <- rep("standard", dim(result2)[1])
+result2 <- cbind(label, result2)
+
+df <- rbind(result1, result2)
+
+# long format of data frame
+dflong <- melt(df, id.vars=c("epoch", "label"))
+head(dflong)
+
+ggplot(dflong, aes(x=epoch, y=value)) + 
+        geom_line(aes(color=label, linetype=label), size = 1) +
+        facet_grid(variable ~ .) + xlab("Epoch #") + ylab("") +
+        ggtitle("Cost and error function for a non-separable dataset \n and its standardized form: eta = 0.0001")
+```
+
+* Interestingly enough, we see that the convergence of the cost function of the non-separable standard vs non-standard data is much bigger.  
+* The convergence of the errors is also much slower than in the previous case (10 vs 200 epochs).  
+*For the standardized data, there is a sharp drop in the number of errors as it was in the separable data.  
+* And then additional accuracy seems to take longer and longer.  
+*One question that I have is if there can be a resurgence in the number of errors or not.  
+* This also makes me curious as to how the stochastic gradient descent algorithm will perform.
+
+
+
+Adaline - Stochastic Gradient Descent
+-------------------------------------
 
