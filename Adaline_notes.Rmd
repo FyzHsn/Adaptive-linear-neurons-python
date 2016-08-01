@@ -268,7 +268,93 @@ ggplot(dflong, aes(x=epoch, y=value)) +
 **Moral: (i) Standardize data set (ii) Stop updating weights once cost function begins to increase**
 
 
-
 Adaline - Stochastic Gradient Descent
 -------------------------------------
+
+Now that I am familiar with the adaline gradient descent algorithm, it is time to implement the adaline stochastic gradient algorithm, i.e. adalineSGD. A few comments.  
+* I would like to learn how to implement C++ code into R.  
+* I will be implementing this in Python after this.  
+In the stochastic gradient descent method, similar to the perceptron algorithm, the weights are updated after examining each data point. This makes the convergence noisier than the gradiant descent method, however, it also filters out shallow minima of the cost function. A crucial aspect of the SGD algorithm is to randomize the data so as to avoid cycles leading to unwanted behaviour in the update of the weight function.
+
+```{r, adalineSGD algorithm}
+adalineSGD <- function(X, y, n_iter=10, eta=0.0001) {
+        
+        # we are dealing with extended input and weight vectors
+        X[, dim(X)[2] + 1] <- 1
+        X <- as.matrix(X)
+        w <- as.matrix(rep(0, dim(X)[2]))
+        
+        # initialize vector to keep track of cost and error function per epoch
+        cost <- rep(0, n_iter)
+        error <- rep(0, n_iter)
+        
+        # loop through each epoch
+        for(i in 1:n_iter) {
+                
+                # loop through each data point 
+                for(j in sample(1:dim(X)[1], dim(X)[1], replace = FALSE)) {
+                        
+                        # keep track of incorrect predictions
+                        z <- sum(w * X[j, ])
+                        
+                        # quantizer
+                        if(z < 0.0) {
+                                ypred <- -1
+                        } else {
+                                ypred <- 1
+                        }
+                        
+                        if(ypred != y[j]) {
+                                error[i] <- error[i] + 1
+                        }
+                        
+                        # update weight
+                        w <- w + eta*(y[j] - z) * X[j, ]
+                        
+                }
+                
+                # compute cost function
+                cost[i] <- sum((y - X %*% w)^2)/2
+        }
+        
+        # data frame consisting of cost and error info
+        infomatrix <- matrix(rep(0, 3 * n_iter), nrow = n_iter, ncol = 3)
+        infomatrix[, 1] <- 1:n_iter
+        infomatrix[, 2] <- log(cost)
+        infomatrix[, 3] <- error
+        
+        infodf <- as.data.frame(infomatrix)
+        names(infodf) <- c("epoch", "log(cost)", "error")
+        
+        return(infodf)
+}
+
+# test the adalineSDG algorithm
+# Standardized vs non-standard data: Cost and error function
+eta <- 0.0001
+n_iter <- 100
+result1 <- adalineSGD(X, y, n_iter, eta)
+label <- rep("non-standard", dim(result1)[1])
+result1 <- cbind(label, result1)
+result2 <- adalineSGD(X_std, y, n_iter, eta)
+label <- rep("standard", dim(result2)[1])
+result2 <- cbind(label, result2)
+
+df <- rbind(result1, result2)
+
+# long format of data frame
+dflong <- melt(df, id.vars=c("epoch", "label"))
+head(dflong)
+
+ggplot(dflong, aes(x=epoch, y=value)) + 
+        geom_line(aes(color=label, linetype=label), size = 1) +
+        facet_grid(variable ~ .) + xlab("Epoch #") + ylab("") +
+        ggtitle("Cost and error function for a dataset \n and its standardized form: eta = 0.0001 (Stochastic Gradient Descent)")
+```
+
+* Right away we can see that the convergence is faster for the standardized data.  
+* For the non-standard data, the convergence of errors to zero is noisier. However, the main benefit of this method is that we can update the weight function as we add additional data points. Whereas in the Gradient Descent method, we have to update the weights based on all data points including the news one. 
+* Furthermore, the two strategies used in adalineGD and adalineSGD can me merged together known as minibatch processing.  
+
+
 
