@@ -115,11 +115,11 @@ adalineGD <- function(X, y, n_iter=10, eta=0.01) {
         # data frame consisting of cost and error info
         infomatrix <- matrix(rep(0, 3 * n_iter), nrow = n_iter, ncol = 3)
         infomatrix[, 1] <- 1:n_iter
-        infomatrix[, 2] <- cost
+        infomatrix[, 2] <- log(cost)
         infomatrix[, 3] <- error
         
         infodf <- as.data.frame(infomatrix)
-        names(infodf) <- c("epoch", "cost", "error")
+        names(infodf) <- c("epoch", "log(cost)", "error")
         
         return(infodf)
 }
@@ -154,12 +154,82 @@ ggplot(dflong, aes(x=epoch, y=value)) +
         geom_line(aes(color=label, linetype=label), size = 1) +
         facet_grid(variable ~ .) + xlab("Epoch #") + ylab("") +
         ggtitle("Cost and error function for a dataset \n and its standardized form: eta = 0.0001")
-# Convergence of weights depending on learning rate
-
-# Long term behaviour of cost function
-
-# Classifying non-separable data
 ```
+
+This makes me curious as to the convergence properties based on different learning rates. That is what we will look at next. Furthermore, we will focus on non-standard and standard data
+
+```{r, cost and error function dependence on learning rate}
+library(ggplot2)
+library(reshape2)
+
+# set the number of sweeps through the entire data set 
+n_iter <- 50
+
+# the list of learning rates that interests me
+eta <- c("0.00005", "0.0001", "0.00025", "0.0005")
+
+# initialize data frames before looping
+# adaline applied before standardizing data
+result <- adalineGD(X, y, n_iter, as.numeric(eta[1]))
+learnrate <- rep(eta[1], dim(result)[1])
+result <- cbind(learnrate, result)
+
+# adaline applied after standardizing data
+result_std <- adalineGD(X_std, y, n_iter, as.numeric(eta[1]))
+learnrate_std <- rep(eta[1], dim(result_std)[1])
+result_std <- cbind(learnrate_std, result_std)
+
+# updating the dataframe by row binding cost and error function for each new learning rate
+df <- result
+df_std <- result_std
+
+# Standardized vs non-standard data: Cost and error function
+for(i in 2:length(eta)) {
+        
+        # adaline applied before standardizing data
+        result <- adalineGD(X, y, n_iter, as.numeric(eta[i]))
+        learnrate <- rep(eta[i], dim(result)[1])
+        result <- cbind(learnrate, result)
+        
+        # adaline applied after standardizing data
+        result_std <- adalineGD(X_std, y, n_iter, as.numeric(eta[i]))
+        learnrate_std <- rep(eta[i], dim(result_std)[1])
+        result_std <- cbind(learnrate_std, result_std)
+        
+        # updating the dataframe by row binding cost and error function for each new learning rate
+        df <- rbind(df, result)
+        df_std <- rbind(df_std, result_std)
+}
+
+# long format of data frame
+dflong <- melt(df, id.vars=c("epoch", "learnrate"))
+df_stdlong <- melt(df_std, id.vars=c("epoch", "learnrate_std"))
+
+head(dflong)
+head(df_stdlong)
+
+g <- ggplot(dflong, aes(x=epoch, y=value)) +
+        geom_line(aes(color = learnrate, linetype = learnrate), size = 1) +
+        facet_grid(variable ~ ., scales="free") + xlab("Epoch #") + ylab("") +
+        ggtitle("Cost and error function convergence for \n varying learning rates")
+head(df_stdlong)
+
+g_std <- ggplot(df_stdlong, aes(x=epoch, y=value)) +
+        geom_line(aes(color = learnrate_std, linetype = learnrate_std), size = 1) +
+        facet_grid(variable ~ ., scales="free") + xlab("Epoch #") + ylab("") +
+        ggtitle("Cost and error function convergence for \n varying learning rates - standardized data")
+
+# print plots
+print(g)
+print(g_std)
+```
+
+Wow! Those were great plots to look at because I was forced to think about several new things:
+
+1. Convergence is not permanent.  
+2. At a certain minimum cost function point, depending on the learning rate, we need to stop updating the weights or it'll start increasing.  
+3. Increasing the learning rate (small enough to converge over the range of epochs) can cause the cost function for the standard and the non-standard data to converge.  
+4. The last plot where we begin to decrease performance of the algorithm applied to the non-standard data, it still performs fine for the standardized data set.
 
 From this plot, we can see that the cost function approaches the minimum faster as well as the error function reducing to nil quicker in the case of the standardized data.
 
@@ -184,7 +254,7 @@ head(dflong)
 
 ggplot(dflong, aes(x=epoch, y=value)) + 
         geom_line(aes(color=label, linetype=label), size = 1) +
-        facet_grid(variable ~ .) + xlab("Epoch #") + ylab("") +
+        facet_grid(variable ~ ., scales = "free") + xlab("Epoch #") + ylab("") +
         ggtitle("Cost and error function for a non-separable dataset \n and its standardized form: eta = 0.0001")
 ```
 
@@ -193,7 +263,9 @@ ggplot(dflong, aes(x=epoch, y=value)) +
 *For the standardized data, there is a sharp drop in the number of errors as it was in the separable data.  
 * And then additional accuracy seems to take longer and longer.  
 *One question that I have is if there can be a resurgence in the number of errors or not.  
-* This also makes me curious as to how the stochastic gradient descent algorithm will perform.
+* This also makes me curious as to how the stochastic gradient descent algorithm will perform.  
+
+**Moral: (i) Standardize data set (ii) Stop updating weights once cost function begins to increase**
 
 
 
