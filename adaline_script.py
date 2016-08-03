@@ -43,8 +43,8 @@ perceptron algorithm and look at the number of errors make during each
 epoch.
 
 """
-from adaline import Adaline
-adln = Adaline(eta=0.1, n_iter=10)
+from adalineGD import AdalineGD
+adln = AdalineGD(eta=0.1, n_iter=10)
 adln.fit(X, y)
 plt.plot(range(1, len(adln.cost_) + 1), np.log10(adln.cost_),
          marker='o')
@@ -52,8 +52,31 @@ plt.xlabel('Epoch #')
 plt.ylabel('SSE cost function')
 plt.show()
 
-plt.plot(range(1, len(adln.errors_) + 1), adln.errors_,
-         marker='o')
+
+
+# How to make panels of plots?
+from adalineSGD import AdalineSGD
+
+# Standardize data
+X_std = np.copy(X)
+X_std[:, 0] = (X[:, 0] - X[:, 0].mean()) / X[:, 0].std()
+X_std[:, 1] = (X[:, 1] - X[:, 1].mean()) / X[:, 1].std()
+
+adln = AdalineGD(eta=0.01, n_iter=15)
+adln.fit(X_std, y)
+adln1 = AdalineSGD(eta=0.01, n_iter=15)
+adln1.fit(X_std, y)
+
+plt.plot(range(1, len(adln1.cost_) + 1), adln1.cost_,
+         marker='x', color='red')
+plt.plot(range(1, len(adln.cost_) + 1), adln1.cost_,
+         marker='o', color='blue')
 plt.xlabel('Epoch #')
 plt.ylabel('Errors')
 plt.show()
+
+
+
+
+
+
