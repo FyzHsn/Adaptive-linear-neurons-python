@@ -15,3 +15,9 @@ Questions that I am interested in:
 4. How are the cost and error function updated?  
 
 I have explored these topics in the html file.
+
+We test the stochastic and regular gradient descent methods on the iris data set once again. Moreover, we test it on both separable and non-separable data. Species setosa and versicolor are separable based on petal and sepal lengths.
+![lab](https://github.com/FyzHsn/Adaptive-linear-neurons-python/blob/master/SetosaVersicolorFig.png?raw=true)
+
+Meanwhile, species Versicolor and Virginica are non-separable.
+![](https://github.com/FyzHsn/Adaptive-linear-neurons-python/blob/master/VersicolorVirginicaFig.png?raw=true)
