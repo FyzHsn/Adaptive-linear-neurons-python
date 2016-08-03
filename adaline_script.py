@@ -82,6 +82,7 @@ plt.title('Comparison of cost function in the [S]tochastic [G]radient\n ' \
 plt.savefig('SGDvsGDCost.png')
 plt.clf()
 
+"""Next up we look at non-separable data """
 # Extract the last 100 rows of the fourth column of the data frame. 
 y = df.iloc[51:150, 4].values
 
@@ -90,17 +91,19 @@ X = df.iloc[51:150, [0, 2]].values
 
 """
 Plot data before executing adaline algorithm. We are looking for
-linear separability.
+non-separability.
 
 """
 plt.scatter(X[0:50, 0], X[0:50, 1], 
             color='red', marker='o', label='versicolor')
-plt.scatter(X[51:101, 0], X[51:101, 1], 
+plt.scatter(X[50:100, 0], X[50:100, 1], 
             color='blue', marker='x', label='virginica')
 plt.xlabel('sepal length')
 plt.ylabel('petal length')
 plt.legend(loc='upper left')
-plt.show()
+plt.title('Species vs petal and sepal length - Non-separable dataset')
+plt.savefig('VersicolorVirginicaFig.png')
+plt.clf()
 
 """
 We can see that the data is linearly separable. Now, let us run the 
@@ -121,14 +124,27 @@ adln.fit(X_std, y)
 adln1 = AdalineSGD(eta=0.01, n_iter=15)
 adln1.fit(X_std, y)
 
-plt.plot(range(1, len(adln1.cost_) + 1), adln1.cost_,
-         marker='x', color='red')
-plt.plot(range(1, len(adln.cost_) + 1), adln.cost_,
-         marker='o', color='blue')
+plt.plot(range(1, len(adln1.errors_) + 1), adln1.errors_,
+         marker='x', color='red', label='AdalineSGD')
+plt.plot(range(1, len(adln.errors_) + 1), adln.errors_,
+         marker='o', color='blue', label='AdalineGD')
 plt.xlabel('Epoch #')
 plt.ylabel('Errors')
-plt.show()
+plt.legend(loc='upper right')
+plt.title('Comparison of errors in the [S]tochastic [G]radient\n ' \
+          ' [D]escent (SGD) and GD in the Adaline algorithm')
+plt.savefig('SGDvsGDErrorsNS.png')
+plt.clf()
 
-
-
-
+# plot showing convergence of the cost function
+plt.plot(range(1, len(adln1.errors_) + 1), adln1.cost_,
+         marker='x', color='red', label='AdalineSGD')
+plt.plot(range(1, len(adln.errors_) + 1), adln.cost_,
+         marker='o', color='blue', label='AdalineGD')
+plt.xlabel('Epoch #')
+plt.ylabel('Errors')
+plt.legend(loc='upper right')
+plt.title('Comparison of cost function in the [S]tochastic [G]radient\n ' \
+          ' [D]escent (SGD) and GD in the Adaline algorithm')
+plt.savefig('SGDvsGDCostNS.png')
+plt.clf()
