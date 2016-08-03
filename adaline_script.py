@@ -18,7 +18,6 @@ import numpy as np
 
 # Extract the first 100 rows of the fourth column of the data frame. 
 y = df.iloc[0:100, 4].values
-print(y[0:10])
 
 y = np.where(y == "Iris-setosa", -1, 1)
 X = df.iloc[0:100, [0, 2]].values
@@ -35,6 +34,72 @@ plt.scatter(X[50:100, 0], X[50:100, 1],
 plt.xlabel('sepal length')
 plt.ylabel('petal length')
 plt.legend(loc='upper left')
+plt.title('Species vs petal and sepal length - Separable dataset')
+plt.savefig('SetosaVersicolorFig.png')
+plt.clf()
+
+"""
+We can see that the data is linearly separable. Now, let us run the 
+perceptron algorithm and look at the number of errors make during each 
+epoch.
+
+"""
+from adalineGD import AdalineGD
+from adalineSGD import AdalineSGD
+
+# Standardize data
+X_std = np.copy(X)
+X_std[:, 0] = (X[:, 0] - X[:, 0].mean()) / X[:, 0].std()
+X_std[:, 1] = (X[:, 1] - X[:, 1].mean()) / X[:, 1].std()
+
+adln = AdalineGD(eta=0.01, n_iter=15)
+adln.fit(X_std, y)
+adln1 = AdalineSGD(eta=0.01, n_iter=15)
+adln1.fit(X_std, y)
+
+plt.plot(range(1, len(adln1.errors_) + 1), adln1.errors_,
+         marker='x', color='red', label='AdalineSGD')
+plt.plot(range(1, len(adln.errors_) + 1), adln.errors_,
+         marker='o', color='blue', label='AdalineGD')
+plt.xlabel('Epoch #')
+plt.ylabel('Errors')
+plt.legend(loc='upper right')
+plt.title('Comparison of errors in the [S]tochastic [G]radient\n ' \
+          ' [D]escent (SGD) and GD in the Adaline algorithm')
+plt.savefig('SGDvsGDErrors.png')
+plt.clf()
+
+# plot showing convergence of the cost function
+plt.plot(range(1, len(adln1.errors_) + 1), adln1.cost_,
+         marker='x', color='red', label='AdalineSGD')
+plt.plot(range(1, len(adln.errors_) + 1), adln.cost_,
+         marker='o', color='blue', label='AdalineGD')
+plt.xlabel('Epoch #')
+plt.ylabel('Errors')
+plt.legend(loc='upper right')
+plt.title('Comparison of cost function in the [S]tochastic [G]radient\n ' \
+          ' [D]escent (SGD) and GD in the Adaline algorithm')
+plt.savefig('SGDvsGDCost.png')
+plt.clf()
+
+# Extract the last 100 rows of the fourth column of the data frame. 
+y = df.iloc[51:150, 4].values
+
+y = np.where(y == "Iris-versicolor", -1, 1)
+X = df.iloc[51:150, [0, 2]].values
+
+"""
+Plot data before executing adaline algorithm. We are looking for
+linear separability.
+
+"""
+plt.scatter(X[0:50, 0], X[0:50, 1], 
+            color='red', marker='o', label='versicolor')
+plt.scatter(X[51:101, 0], X[51:101, 1], 
+            color='blue', marker='x', label='virginica')
+plt.xlabel('sepal length')
+plt.ylabel('petal length')
+plt.legend(loc='upper left')
 plt.show()
 
 """
@@ -44,17 +109,6 @@ epoch.
 
 """
 from adalineGD import AdalineGD
-adln = AdalineGD(eta=0.1, n_iter=10)
-adln.fit(X, y)
-plt.plot(range(1, len(adln.cost_) + 1), np.log10(adln.cost_),
-         marker='o')
-plt.xlabel('Epoch #')
-plt.ylabel('SSE cost function')
-plt.show()
-
-
-
-# How to make panels of plots?
 from adalineSGD import AdalineSGD
 
 # Standardize data
@@ -69,13 +123,11 @@ adln1.fit(X_std, y)
 
 plt.plot(range(1, len(adln1.cost_) + 1), adln1.cost_,
          marker='x', color='red')
-plt.plot(range(1, len(adln.cost_) + 1), adln1.cost_,
+plt.plot(range(1, len(adln.cost_) + 1), adln.cost_,
          marker='o', color='blue')
 plt.xlabel('Epoch #')
 plt.ylabel('Errors')
 plt.show()
-
-
 
 
 
