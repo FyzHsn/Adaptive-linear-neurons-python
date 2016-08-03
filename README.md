@@ -17,7 +17,22 @@ Questions that I am interested in:
 I have explored these topics in the html file.
 
 We test the stochastic and regular gradient descent methods on the iris data set once again. Moreover, we test it on both separable and non-separable data. Species setosa and versicolor are separable based on petal and sepal lengths.
-![lab](https://github.com/FyzHsn/Adaptive-linear-neurons-python/blob/master/SetosaVersicolorFig.png?raw=true)
+![](https://github.com/FyzHsn/Adaptive-linear-neurons-python/blob/master/SetosaVersicolorFig.png?raw=true)  
 
-Meanwhile, species Versicolor and Virginica are non-separable.
-![](https://github.com/FyzHsn/Adaptive-linear-neurons-python/blob/master/VersicolorVirginicaFig.png?raw=true)
+Meanwhile, species Versicolor and Virginica are non-separable.  
+![](https://github.com/FyzHsn/Adaptive-linear-neurons-python/blob/master/VersicolorVirginicaFig.png?raw=true)  
+
+Comparison of error and cost function for the separable data:  
+![](https://github.com/FyzHsn/Adaptive-linear-neurons-python/blob/master/SGDvsGDErrors.png?raw=true)  
+![](https://github.com/FyzHsn/Adaptive-linear-neurons-python/blob/master/SGDvsGDCost.png?raw=true)
+
+Comparison of error and cost function for the non-separable data:    
+![](https://github.com/FyzHsn/Adaptive-linear-neurons-python/blob/master/SGDvsGDErrorsNS.png?raw=true)    
+![](https://github.com/FyzHsn/Adaptive-linear-neurons-python/blob/master/SGDvsGDCostNS.png?raw=true)  
+
+Lessons:   
+1. Stochastic gradient descent is good for online learning.  
+2. SGD converges faster than GD.  
+3. SGD is noisier due to more frequent weight updates.  
+4. SGD is better at avoiding shallow minima in the cost function.  
+5. From before, we have that standardized data leads to faster convergence of weights.  
