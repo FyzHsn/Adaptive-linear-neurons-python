@@ -75,7 +75,7 @@ class AdalineSGD(object):
             # Append the number of errors and cost function at the end of each
             # epoch
             self.errors_.append(error)
-            self.cost_.append(cost/X.shape[0])
+            self.cost_.append(cost)
         
         return self
         

@@ -64,7 +64,7 @@ plt.plot(range(1, len(adln.errors_) + 1), adln.errors_,
 plt.xlabel('Epoch #')
 plt.ylabel('Errors')
 plt.legend(loc='upper right')
-plt.title('Comparison of errors in the [S]tochastic [G]radient\n ' \
+plt.title('Errors in the [S]tochastic [G]radient\n ' \
           ' [D]escent (SGD) and GD in the Adaline algorithm')
 plt.savefig('SGDvsGDErrors.png')
 plt.clf()
@@ -77,7 +77,7 @@ plt.plot(range(1, len(adln.errors_) + 1), adln.cost_,
 plt.xlabel('Epoch #')
 plt.ylabel('Errors')
 plt.legend(loc='upper right')
-plt.title('Comparison of cost function in the [S]tochastic [G]radient\n ' \
+plt.title('Cost function in the [S]tochastic [G]radient\n ' \
           ' [D]escent (SGD) and GD in the Adaline algorithm')
 plt.savefig('SGDvsGDCost.png')
 plt.clf()
@@ -131,7 +131,7 @@ plt.plot(range(1, len(adln.errors_) + 1), adln.errors_,
 plt.xlabel('Epoch #')
 plt.ylabel('Errors')
 plt.legend(loc='upper right')
-plt.title('Comparison of errors in the [S]tochastic [G]radient\n ' \
+plt.title('Errors in the [S]tochastic [G]radient\n ' \
           ' [D]escent (SGD) and GD in the Adaline algorithm')
 plt.savefig('SGDvsGDErrorsNS.png')
 plt.clf()
@@ -144,7 +144,7 @@ plt.plot(range(1, len(adln.errors_) + 1), adln.cost_,
 plt.xlabel('Epoch #')
 plt.ylabel('Errors')
 plt.legend(loc='upper right')
-plt.title('Comparison of cost function in the [S]tochastic [G]radient\n ' \
+plt.title('Cost function of the [S]tochastic [G]radient\n ' \
           ' [D]escent (SGD) and GD in the Adaline algorithm')
 plt.savefig('SGDvsGDCostNS.png')
 plt.clf()

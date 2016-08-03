@@ -57,6 +57,12 @@ class AdalineGD(object):
         
         for i in range(self.n_iter):
             err = 0
+            # compute errors per epoch
+            for j in range(X.shape[1]):
+                status = y[j] - self.predict(X[j, ]) 
+                err += int(status != 0.0)
+                
+            # update weights    
             output = self.net_input(X)
             errors = (y - output)
             self.w_[1:] += self.eta*X.T.dot(errors)
@@ -64,10 +70,7 @@ class AdalineGD(object):
             cost = (errors**2).sum()/2.0
             self.cost_.append(cost)
             
-            # compute errors per epoch
-            for j in range(X.shape[1]):
-                status = y[j] - self.predict(X[j, ]) 
-                err += int(status != 0.0)
+            
             self.errors_.append(err)
             
         return self
