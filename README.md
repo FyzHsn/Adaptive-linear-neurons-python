@@ -32,7 +32,9 @@ Comparison of error and cost function for the non-separable data:
 
 Lessons:   
 1. Stochastic gradient descent is good for online learning.  
-2. The cost function using SGD converges faster than GD. However, the situation is reversed for the number of errors. **Why?**  
+2. The cost function using SGD converges faster than GD. However, the situation is reversed for the number of errors. **Why?** In fact, the error function for SGD can go down much slower. 
 3. SGD is noisier due to more frequent weight updates.  
 4. SGD is better at avoiding shallow minima in the cost function.  
 5. From before, we have that standardized data leads to faster convergence of weights.  
+6. There are learning rates for which the SGD converges but the GD doesn't. Hence, GD has a smaller domain of convergence as a function of the learning rate.
+7. Standardizing the dataset still seems to improve cost function convergence and the GD cost function can converge instead of blowing up as for the unstandardized data.
