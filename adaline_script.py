@@ -10,9 +10,6 @@ import pandas as pd
 df = pd.read_csv('https://archive.ics.uci.edu/ml/'
     'machine-learning-databases/iris/iris.data', header=None)
     
-# View data frame head and tail.
-print(df.head())
-
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -37,6 +34,7 @@ plt.legend(loc='upper left')
 plt.title('Species vs petal and sepal length - Separable dataset')
 plt.savefig('SetosaVersicolorFig.png')
 plt.clf()
+#plt.show()
 
 """
 We can see that the data is linearly separable. Now, let us run the 
@@ -52,9 +50,9 @@ X_std = np.copy(X)
 X_std[:, 0] = (X[:, 0] - X[:, 0].mean()) / X[:, 0].std()
 X_std[:, 1] = (X[:, 1] - X[:, 1].mean()) / X[:, 1].std()
 
-adln = AdalineGD(eta=0.01, n_iter=15)
+adln = AdalineGD(eta=0.01, n_iter=25)
 adln.fit(X_std, y)
-adln1 = AdalineSGD(eta=0.01, n_iter=15)
+adln1 = AdalineSGD(eta=0.01, n_iter=25)
 adln1.fit(X_std, y)
 
 plt.plot(range(1, len(adln1.errors_) + 1), adln1.errors_,
@@ -68,6 +66,7 @@ plt.title('Errors in the [S]tochastic [G]radient\n ' \
           ' [D]escent (SGD) and GD in the Adaline algorithm')
 plt.savefig('SGDvsGDErrors.png')
 plt.clf()
+#plt.show()
 
 # plot showing convergence of the cost function
 plt.plot(range(1, len(adln1.errors_) + 1), adln1.cost_,
@@ -81,6 +80,7 @@ plt.title('Cost function in the [S]tochastic [G]radient\n ' \
           ' [D]escent (SGD) and GD in the Adaline algorithm')
 plt.savefig('SGDvsGDCost.png')
 plt.clf()
+#plt.show()
 
 """Next up we look at non-separable data """
 # Extract the last 100 rows of the fourth column of the data frame. 
@@ -104,6 +104,7 @@ plt.legend(loc='upper left')
 plt.title('Species vs petal and sepal length - Non-separable dataset')
 plt.savefig('VersicolorVirginicaFig.png')
 plt.clf()
+#plt.show()
 
 """
 We can see that the data is linearly separable. Now, let us run the 
@@ -119,9 +120,9 @@ X_std = np.copy(X)
 X_std[:, 0] = (X[:, 0] - X[:, 0].mean()) / X[:, 0].std()
 X_std[:, 1] = (X[:, 1] - X[:, 1].mean()) / X[:, 1].std()
 
-adln = AdalineGD(eta=0.01, n_iter=15)
+adln = AdalineGD(eta=0.01, n_iter=35)
 adln.fit(X_std, y)
-adln1 = AdalineSGD(eta=0.01, n_iter=15)
+adln1 = AdalineSGD(eta=0.01, n_iter=35)
 adln1.fit(X_std, y)
 
 plt.plot(range(1, len(adln1.errors_) + 1), adln1.errors_,
@@ -135,6 +136,7 @@ plt.title('Errors in the [S]tochastic [G]radient\n ' \
           ' [D]escent (SGD) and GD in the Adaline algorithm')
 plt.savefig('SGDvsGDErrorsNS.png')
 plt.clf()
+#plt.show()
 
 # plot showing convergence of the cost function
 plt.plot(range(1, len(adln1.errors_) + 1), adln1.cost_,
@@ -148,3 +150,4 @@ plt.title('Cost function of the [S]tochastic [G]radient\n ' \
           ' [D]escent (SGD) and GD in the Adaline algorithm')
 plt.savefig('SGDvsGDCostNS.png')
 plt.clf()
+#plt.show()

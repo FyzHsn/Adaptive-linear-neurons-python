@@ -65,13 +65,13 @@ class AdalineSGD(object):
             # Loop through the datasets
             for j in range(X.shape[0]):
                 
+                # update weights and cost function
+                cost += self._weight_update(X[j, ], y[j])
+                
                 # update number of errors
                 difference = self.predict(X[j, ]) - y[j]
                 error += int(difference != 0)
-                
-                # update weights and cost function
-                cost += self._weight_update(X[j, ], y[j])
-            
+                            
             # Append the number of errors and cost function at the end of each
             # epoch
             self.errors_.append(error)
@@ -94,12 +94,12 @@ class AdalineSGD(object):
         
     # update weights according to the stochastic gradient descent method
     def _weight_update(self, X, y):
-        difference = (y - self.activation(X))
-        self.w_[0] += self.eta * difference
-        self.w_[1:] += self.eta * difference * X        
+        diff = (y - self.activation(X))
+        self.w_[0] += self.eta * diff
+        self.w_[1:] += self.eta * diff * X        
    
         # Compute the cost function
-        cost =  (difference**2) / 2.0        
+        cost =  (diff**2) / 2.0        
         return cost       
           
     """Method to compute the net input. """

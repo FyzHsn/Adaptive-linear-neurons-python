@@ -58,7 +58,7 @@ class AdalineGD(object):
         for i in range(self.n_iter):
             err = 0
             # compute errors per epoch
-            for j in range(X.shape[1]):
+            for j in range(X.shape[0]):
                 status = y[j] - self.predict(X[j, ]) 
                 err += int(status != 0.0)
                 
