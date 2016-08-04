@@ -38,3 +38,6 @@ Lessons:
 5. From before, we have that standardized data leads to faster convergence of weights.     
 6. There are learning rates for which the SGD converges but the GD doesn't. Hence, GD has a smaller domain of convergence as a function of the learning rate.   
 7. Standardizing the dataset still seems to improve cost function convergence and the GD cost function can converge instead of blowing up as for the unstandardized data.   
+ 
+Since I am anxious to move on, I forgot to report the eta values> Oh actually it's in the adaline_script.py file. 
+
